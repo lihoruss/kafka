@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="report_artifactory_gitlab_bcs_ru_sentinel_harbor_aggredator_router">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/report_artifactory_gitlab_bcs_ru_sentinel_harbor_aggredator_router.zip!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
