@@ -4,8 +4,16 @@ sudo apt-get install -y curl gnupg lsb-release
 curl -fsSL https://openresty.org/package/pubkey.gpg | sudo tee /etc/apt/trusted.gpg.d/openresty.asc
 
 echo "deb http://openresty.org/package/debian $(lsb_release -c | awk '{print $2}') main" | sudo tee /etc/apt/sources.list.d/openresty.list
-
 sudo apt-get install nginx-module-lua
+
+root@37fac9c17c7b:/opt/nginx-1.22.1# ldconfig -p | grep luajit
+	libluajit-5.1.so.2 (libc6,x86-64) => /usr/local/lib/libluajit-5.1.so.2
+	libluajit-5.1.so (libc6,x86-64) => /usr/local/lib/libluajit-5.1.so
+root@37fac9c17c7b:/opt/nginx-1.22.1# export LUAJIT_LIB=/usr/local/lib
+
+sudo ldconfig
+
+
 
 
 worker_processes 1;
