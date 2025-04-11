@@ -1,0 +1,15 @@
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]: nginx: [alert] failed to load the 'resty.core' module (https://github.com/openresty/lua-resty-core); ensure you are using an OpenResty release from https:>
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no field package.preload['resty.core']
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file './resty/core.lua'
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file '/usr/local/share/luajit-2.1/resty/core.lua'
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file '/usr/local/share/lua/5.1/resty/core.lua'
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file '/usr/local/share/lua/5.1/resty/core/init.lua'
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file './resty/core.so'
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file '/usr/local/lib/lua/5.1/resty/core.so'
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file '/usr/local/lib/lua/5.1/loadall.so'
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file './resty.so'
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file '/usr/local/lib/lua/5.1/resty.so'
+Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file '/usr/local/lib/lua/5.1/loadall.so') in /usr/local/nginx/conf/nginx.conf:61
+Apr 11 06:20:14 s-nskrt-msapp01 systemd[1]: nginx.service: Control process exited, code=exited, status=1/FAILURE
+Apr 11 06:20:14 s-nskrt-msapp01 systemd[1]: nginx.service: Failed with result 'exit-code'.
+Apr 11 06:20:14 s-nskrt-msapp01 systemd[1]: Failed to start nginx.service - A high performance web server and a reverse proxy server.
