@@ -13,3 +13,10 @@ Apr 11 06:20:14 s-nskrt-msapp01 nginx[182810]:         no file '/usr/local/lib/l
 Apr 11 06:20:14 s-nskrt-msapp01 systemd[1]: nginx.service: Control process exited, code=exited, status=1/FAILURE
 Apr 11 06:20:14 s-nskrt-msapp01 systemd[1]: nginx.service: Failed with result 'exit-code'.
 Apr 11 06:20:14 s-nskrt-msapp01 systemd[1]: Failed to start nginx.service - A high performance web server and a reverse proxy server.
+
+
+cd /usr/local/share/lua/5.1
+mkdir -p resty
+
+curl -L https://raw.githubusercontent.com/openresty/lua-resty-core/master/lib/resty/core.lua -o resty/core.lua
+curl -L https://raw.githubusercontent.com/openresty/lua-resty-lrucache/master/lib/resty/lrucache.lua -o resty/lrucache.lua
