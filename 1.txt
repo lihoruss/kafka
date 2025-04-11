@@ -55,4 +55,51 @@ export LUAJIT_INC=/usr/local/include/luajit-2.1
     --with-cc-opt="-I/usr/local/include/luajit-2.1" \
     --with-http_ssl_module
 
+server {
+    listen 8080;
+
+    set $redirect_uri "";
+
+    location / {
+        proxy_pass https://console-openshift-console.apps.okd4bank.rtk.okdp.app.bcs;
+        proxy_ssl_verify off;
+        proxy_set_header Host console-openshift-console.apps.okd4bank.rtk.okdp.app.bcs;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+
+        header_filter_by_lua_block {
+            local body = ngx.arg[1]
+            if body then
+                body = ngx.re.sub(body, "https://console%-openshift%-console%.apps%.okd4bank%.rtk%.okdp%.app%.bcs", "http://127.0.0.1:8080", "jo")
+                body = ngx.re.sub(body, "https://oauth%-openshift%.apps%.okd4bank%.rtk%.okdp%.app%.bcs", "http://127.0.0.1:8080/oauth", "jo")
+                body = ngx.re.sub(body, "redirect_uri=https%%3A%%2F%%2Fconsole%-openshift%-console%.apps%.okd4bank%.rtk%.okdp%.app%.bcs%%2Fauth%%2Fcallback", "redirect_uri=http%%3A%%2F%%2F127.0.0.1%%2Fauth%%2Fcallback", "jo")
+                ngx.arg[1] = body
+            end
+        }
+
+        body_filter_by_lua_block {
+            local chunk = ngx.arg[1]
+            if chunk then
+                chunk = ngx.re.sub(chunk, "https://console%-openshift%-console%.apps%.okd4bank%.rtk%.okdp%.app%.bcs", "http://127.0.0.1:8080", "jo")
+                chunk = ngx.re.sub(chunk, "https://oauth%-openshift%.apps%.okd4bank%.rtk%.okdp%.app%.bcs", "http://127.0.0.1:8080/oauth", "jo")
+                chunk = ngx.re.sub(chunk, "redirect_uri=https%%3A%%2F%%2Fconsole%-openshift%-console%.apps%.okd4bank%.rtk%.okdp%.app%.bcs%%2Fauth%%2Fcallback", "redirect_uri=http%%3A%%2F%%2F127.0.0.1%%2Fauth%%2Fcallback", "jo")
+                ngx.arg[1] = chunk
+            end
+        }
+    }
+
+    location /oauth/ {
+        proxy_pass https://oauth-openshift.apps.okd4bank.rtk.okdp.app.bcs;
+        proxy_ssl_verify off;
+        proxy_set_header Host oauth-openshift.apps.okd4bank.rtk.okdp.app.bcs;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+    }
+}
+
+
 
