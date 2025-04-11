@@ -46,3 +46,13 @@ RUN ./configure --prefix=/usr/local/nginx --add-module=/lua-nginx-module && \
     make && \
     make install
 
+
+export LUAJIT_LIB=/usr/local/lib
+export LUAJIT_INC=/usr/local/include/luajit-2.1
+
+./configure --prefix=/usr/local/nginx --add-module=./lua-nginx-module \
+    --with-ld-opt="-L/usr/local/lib" \
+    --with-cc-opt="-I/usr/local/include/luajit-2.1" \
+    --with-http_ssl_module
+
+
