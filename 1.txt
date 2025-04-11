@@ -20,3 +20,5 @@ mkdir -p resty
 
 curl -L https://raw.githubusercontent.com/openresty/lua-resty-core/master/lib/resty/core.lua -o resty/core.lua
 curl -L https://raw.githubusercontent.com/openresty/lua-resty-lrucache/master/lib/resty/lrucache.lua -o resty/lrucache.lua
+
+lua_package_path "/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;;";
