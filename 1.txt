@@ -22,3 +22,27 @@ curl -L https://raw.githubusercontent.com/openresty/lua-resty-core/master/lib/re
 curl -L https://raw.githubusercontent.com/openresty/lua-resty-lrucache/master/lib/resty/lrucache.lua -o resty/lrucache.lua
 
 lua_package_path "/usr/local/share/lua/5.1/?.lua;/usr/local/share/lua/5.1/?/init.lua;;";
+
+
+
+
+wget https://github.com/openresty/luajit2/archive/refs/tags/v2.1-20250117.tar.gz
+tar -xzvf v2.1-20250117.tar.gz
+cd luajit2-2.1-20250117
+make
+sudo make install
+
+
+# Скачиваем исходники Nginx
+RUN curl -LO http://nginx.org/download/nginx-1.22.1.tar.gz && \
+    tar -xzvf nginx-1.22.1.tar.gz
+
+# Скачиваем модуль ngx_http_lua_module
+RUN git clone https://github.com/openresty/lua-nginx-module.git
+
+# Сборка Nginx с LuaJIT
+WORKDIR nginx-1.22.1
+RUN ./configure --prefix=/usr/local/nginx --add-module=/lua-nginx-module && \
+    make && \
+    make install
+
