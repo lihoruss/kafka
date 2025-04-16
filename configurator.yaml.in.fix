@@ -1,0 +1,149 @@
+.dbconfig: &dbconfig
+  DATABASE_HOST: "${DATABASE_HOST-db}"
+  DATABASE_PORT: "${DATABASE_PORT-7654}"
+  DATABASE_USER: "${DATABASE_USER-admin}"
+  DATABASE_PASS: "${DATABASE_PASS-123456}"
+  DATABASE_URL: "postgresql://${DATABASE_USER-admin}:${DATABASE_PASS-123456}@${DATABASE_HOST-db}:${DATABASE_PORT-7654}/?pool=5"
+  DATABASE_NAME: ""
+
+.redisconfig: &redisconfig
+  REDIS_HOST: "${REDIS_HOST-redis}"
+  REDIS_PORT: "${REDIS_PORT-6379}"
+  REDIS_USER: "${REDIS_USER}"
+  REDIS_PASS: "${REDIS_PASS}"
+  REDIS_URL:  "redis://${REDIS_USER}:${REDIS_PASS}@${REDIS_HOST-redis}:${REDIS_PORT-6379}/0"
+
+.filator: &filatorconfig
+  FILATOR_HOST: "${FILATOR_HOST-filator.agg.local}"
+  FILATOR_PORT: "${FILATOR_PORT-80}"
+  FILATOR_URL: "http://${FILATOR_HOST-filator.agg.local}:${FILATOR_PORT-80}"
+
+.mqconfig: &mqconfig
+  MQ_HOST:  "${MQ_HOST-mq}"
+  MQ_PORT:  "${MQ_PORT-6671}"
+  MQ_ALIAS: "${MQ_ALIAS-mq}"
+  MQ_VHOST: "${MQ_VHOST-/}"
+  MQ_URL:   "amqps://${MQ_HOST}:${MQ_PORT}/"
+  MQ_PASS:  ""
+  MQ_USE_TLS: "${MQ_USE_TLS}"
+  
+.generic: &generic
+  ELASTIC_HOST: "${ELASTIC_HOST}"
+  ELASTIC_PORT: "${ELASTIC_PORT}"
+
+apigw:
+  <<: [*generic, *dbconfig, *mqconfig, *redisconfig, *filatorconfig]
+  LOG_LEVEL: "${APIGW_LOG_LEVEL-info}"
+  DATABASE_URL: "postgresql://${DATABASE_USER-admin}:${DATABASE_PASS-123456}@${DATABASE_HOST-db}:${DATABASE_PORT-7654}/aggredator-service-apigw?pool=5"
+  DATABASE_NAME: "aggredator-service-apigw"
+  WAREHOUSE_DATABASE_URL: "postgresql://${DATABASE_USER-admin}:${DATABASE_PASS-123456}@${DATABASE_HOST-db}:${DATABASE_PORT-7654}/aggredator-service-apigw-statistics?pool=5"
+  CA_CERT: consul://${CONSUL_KV_NAMESPACE}services/ca/private/cacert.pem
+  CLIENT_CERT: consul://${CONSUL_KV_NAMESPACE}services/ca/private/apigw/cert.pem
+  CLIENT_KEY: consul://${CONSUL_KV_NAMESPACE}services/ca/private/apigw/key.pem
+  RAILS_ENV: production
+  NODE_ENV: production
+  ADMIN_USER: "${APIGW_ADMIN_USER-admin}"
+  ADMIN_PASS: "${APIGW_ADMIN_PASS-123456}"
+  CLIENTS_CONFIGURATION_URI: consul://${CURRENT_IP}:8500/v1/kv/aggredator/${AGGREDATOR_INSTANCE}/services/env/smev/CLIENTS_CONFIGURATION
+  CALLBACK_PROXY_URL: ""
+  # CLIENTS_CONFIGURATION_URI: consul://172.22.1.219:8500/v1/kv/aggredator/prod/services/env/smev/CLIENTS_CONFIGURATION
+
+apigw-assistant:
+  PROMETHEUS_ENABLED: true
+  PROMETHEUS_PORT: 8080
+
+apigw-jobs:
+  PROMETHEUS_ENABLED: true
+  PROMETHEUS_PORT: 8080
+
+bedrock:
+  <<: [*generic, *dbconfig, *mqconfig, *redisconfig, *filatorconfig]
+  LOG_LEVEL: "${BEDROCK_LOG_LEVEL-info}"
+  DATABASE_URL: "postgresql://${DATABASE_USER-admin}:${DATABASE_PASS-123456}@${DATABASE_HOST-db}:${DATABASE_PORT-7654}/aggredator-service-bedrock?pool=5"
+  DATABASE_NAME: "aggredator-service-bedrock"
+  CA_CERT: consul://${CONSUL_KV_NAMESPACE}services/ca/private/cacert.pem
+  CLIENT_CERT: consul://${CONSUL_KV_NAMESPACE}services/ca/private/bedrock/cert.pem
+  CLIENT_KEY: consul://${CONSUL_KV_NAMESPACE}services/ca/private/bedrock/key.pem
+  RAILS_ENV: production
+  SERVICE_PLUGINS: ALL_WITH_INCOMINGS
+  PROMETHEUS_PORT: 8080
+  PROMETHEUS_ENABLED: true
+  JAEGER_ENABLED: false
+  SMEV_SERVICE: smev3-golang
+  PFR_SNILS_VALIDATION_DEFAULT_VERSION: "1.0.3"
+  ESIA_PERSONAL_DATA_DOCS_DEFAULT_VERSION: "1.0.0"
+
+smev3-golang:
+  <<: [*generic, *dbconfig, *mqconfig, *redisconfig, *filatorconfig]
+  LOG_LEVEL: "${SMEV3_LOG_LEVEL-info}"
+  DATABASE_URL: "postgresql://${DATABASE_USER-admin}:${DATABASE_PASS-123456}@${DATABASE_HOST-db}:${DATABASE_PORT-7654}/aggredator-service-smev3-golang"
+  DATABASE_NAME: "aggredator-service-smev3-golang"
+  CA_CERT: consul://${CONSUL_KV_NAMESPACE}services/ca/private/cacert.pem
+  CLIENT_CERT: consul://${CONSUL_KV_NAMESPACE}services/ca/private/smev3-golang/cert.pem
+  CLIENT_KEY: consul://${CONSUL_KV_NAMESPACE}services/ca/private/smev3-golang/key.pem
+  RAILS_ENV: production
+  GO_ENV: production
+  PROMETHEUS_PORT: 8080
+  PROMETHEUS_ENABLED: true
+  JAEGER_ENABLED: false
+  LOGS_SENDER_TYPE: "upload"
+  SMEV_DEFAULT_SERVICE: smev12
+  CRYPTO_PROVIDER: multijigner
+  SMEV_CLIENTS_CONFIGURATION_TYPE: clients_config
+  CLIENTS_CONFIGURATION_URI: consul://${CURRENT_IP}:8500/v1/kv/aggredator/${AGGREDATOR_INSTANCE}/services/env/smev/CLIENTS_CONFIGURATION
+  CLIENTS_CONFIGURATION_FORMAT: yaml
+
+smev:
+  CLIENTS_CONFIGURATION:
+    smev3-local: |-
+      smev3-local:
+        smev:
+          type: smev
+          signer:
+            cert: smev
+            envelope: true
+            url: http://admin:123456@signer.agg.local/
+          adapters:
+              
+          - "endpoint": "http://172.20.3.12:7500/smev/v1.2/ws"
+            "fs_type": "s3"
+            "s3_endpoint": "http://172.20.3.12:7500"
+            "ftp_endpoint": "ftp://172.20.3.12/"
+            "name": "smev12"
+            "protocol": "1.2"
+            "test": false
+
+          - "endpoint": "http://172.20.3.12:5000/transport_1_0_2/"
+            "fs_type": "s3"
+            "s3_endpoint": "http://172.20.3.12:7500"
+            "ftp_endpoint": "ftp://172.20.3.12/"
+            "name": "smev13"
+            "protocol": "1.3"
+            "test": false
+          filters:
+            - adapters:
+                - smev12
+              filters:
+                - "urn://mincomsvyaz/esia/receiving_personal_data_documents/1.0.1|Request"
+                - ""
+              request_filters:
+                - ""
+              scale: 1
+            - adapters:
+                - smev13
+              filters:
+                - "urn://mincomsvyaz/esia/receiving_personal_data_documents/1.0.1|Request"
+                - ""
+              request_filters:
+                - ""
+              scale: 1
+
+          s3_creds:
+            - adapters:
+                - smev12
+                - smev13
+              password: unused
+              user: unused
+
+
+
